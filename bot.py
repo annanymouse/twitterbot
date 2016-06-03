@@ -7,6 +7,7 @@ import requests
 import sys
 import urllib
 import redis
+from datetime import datetime
 
 TWITTER_TIMEOUT_SECS = 10 * 60 # 10 minutes
 
@@ -52,6 +53,10 @@ def tweet(message):
     print("Posting message {}".format(message))
     api.update_status(status=message)
 
+def dateformatter(ts):
+    dt = datetime.fromtimestamp(ts)
+    return dt.strftime("%I:%M%p")
+
 def weather():
     try:
         u = "http://api.openweathermap.org/data/2.5/weather?id={0}&mode=json&units=imperial&APPID={1}"
@@ -59,12 +64,16 @@ def weather():
         j = json.loads(r.text)
     except:
         sys.stderr.write("Couldn't load current conditions\n")
-    temperature = j['main']['temp']
-    conditions = j['weather'][0]['description']
-    humidity = j['main']['humidity']
-    s = "Irvine Weather: {0} with a temperature of {1}" u"\u00B0" "F, humidity at {2}%."
-    currentweather = s.format(conditions[0].upper() + conditions[1:].lower(),
-    int(round(temperature)), int(round(humidity)))
+
+    temperature = int(round(j['main']['temp']))
+    conditions = j['weather'][0]['description'].title()
+    humidity = int(round(j['main']['humidity']))
+    sunrise = dateformatter(j['sys']['sunrise'])
+    sunset = dateformatter(j['sys']['sunset'])
+
+    s = u"Irvine Weather: {}, {}°F, {}% humidity."
+    s += u" Sunrise at {}, sunset at {}."
+    currentweather = s.format(conditions, temperature, humidity, sunrise, sunset)
     return currentweather
 
 def do_tweet(tweet_type='weather'):
