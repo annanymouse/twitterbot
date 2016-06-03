@@ -6,8 +6,22 @@ import json
 import requests
 import sys
 import urllib
+import redis
 
-nltk.download('punkt')
+TWITTER_TIMEOUT_SECS = 10 * 60 # 10 minutes
+
+# Connect to redis server
+R = redis.Redis()
+
+# Server already has downloaded the data
+# nltk.download('punkt')
+
+def too_soon():
+    if R.get('tweetbot_timeout') is not None:
+        return True
+    else:
+        R.setex('tweetbot_timeout','running', TWITTER_TIMEOUT_SECS)
+        return False
 
 def get_next_chunk():
     # open text file
@@ -53,6 +67,17 @@ def weather():
     int(round(temperature)), int(round(humidity)))
     return currentweather
 
-#tweet(get_next_chunk())
-tweet(weather())
-#print(weather())
+def do_tweet(tweet_type='weather'):
+    if tweet_type == 'weather':
+        data = weather()
+    elif tweet_type == 'sonnet':
+        data = get_next_chunk()
+    tweet(data)
+
+def main():
+    if not too_soon():
+        do_tweet()
+
+if __name__ == '__main__':
+    main()
+    
