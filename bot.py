@@ -46,10 +46,9 @@ def weather():
     except:
         sys.stderr.write("Couldn't load current conditions\n")
     temperature = j['main']['temp']
-    #temperature_unit = 'F' if (units == 'imperial') else 'C'
     conditions = j['weather'][0]['description']
     humidity = j['main']['humidity']
-    s = "Irvine Weather: {0} with a temperature of {1}" u"\u00B0" "C, humidity at {2}%."
+    s = "Irvine Weather: {0} with a temperature of {1}" u"\u00B0" "F, humidity at {2}%."
     currentweather = s.format(conditions[0].upper() + conditions[1:].lower(),
     int(round(temperature)), int(round(humidity)))
     return currentweather
