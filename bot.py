@@ -8,14 +8,20 @@ import sys
 import urllib
 import redis
 
+TWITTER_TIMEOUT_SECS = 10 * 60 # 10 minutes
+
+# Connect to redis server
+R = redis.Redis()
+
 # Server already has downloaded the data
 # nltk.download('punkt')
 
 def too_soon():
-    # Check redis for our key
-    # If the key is there, return false
-    # If the key isn't there, set it with 10 minute expire and return true
-    return true
+    if R.get('tweetbot_timeout') is not None:
+        return True
+    else:
+        R.setex('tweetbot_timeout','running', TWITTER_TIMEOUT_SECS)
+        return False
 
 def get_next_chunk():
     # open text file
