@@ -51,7 +51,7 @@ def tweet(message):
     api = tweepy.API(auth)
     auth.secure = True
     print("Posting message {}".format(message))
-    api.update_status(status=message)
+    api.update_status(status=message[:140])
 
 def dateformatter(ts):
     dt = datetime.fromtimestamp(ts)
