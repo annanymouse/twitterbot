@@ -6,8 +6,16 @@ import json
 import requests
 import sys
 import urllib
+import redis
 
-nltk.download('punkt')
+# Server already has downloaded the data
+# nltk.download('punkt')
+
+def too_soon():
+    # Check redis for our key
+    # If the key is there, return false
+    # If the key isn't there, set it with 10 minute expire and return true
+    return true
 
 def get_next_chunk():
     # open text file
@@ -53,6 +61,17 @@ def weather():
     int(round(temperature)), int(round(humidity)))
     return currentweather
 
-#tweet(get_next_chunk())
-tweet(weather())
-#print(weather())
+def do_tweet(tweet_type='weather'):
+    if tweet_type == 'weather':
+        data = weather()
+    elif tweet_type == 'sonnet':
+        data = get_next_chunk()
+    tweet(data)
+
+def main():
+    if not too_soon():
+        do_tweet()
+
+if __name__ == '__main__':
+    main()
+    
