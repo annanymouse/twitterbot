@@ -1,6 +1,12 @@
-from secret import C_KEY, C_SECRET, A_TOKEN, A_TOKEN_SECRET
+from secret import C_KEY, C_SECRET, A_TOKEN, A_TOKEN_SECRET, WEATHER_KEY, CITY
 import tweepy # for tweeting
 import nltk # for sentence parsing
+import requests
+import json
+import requests
+import sys
+import urllib
+
 nltk.download('punkt')
 
 def get_next_chunk():
@@ -32,4 +38,22 @@ def tweet(message):
     print("Posting message {}".format(message))
     api.update_status(status=message)
 
-tweet(get_next_chunk())
+def weather():
+    try:
+        u = "http://api.openweathermap.org/data/2.5/weather?id={0}&mode=json&units=imperial&APPID={1}"
+        r = requests.get(u.format(CITY, WEATHER_KEY))
+        j = json.loads(r.text)
+    except:
+        sys.stderr.write("Couldn't load current conditions\n")
+    temperature = j['main']['temp']
+    #temperature_unit = 'F' if (units == 'imperial') else 'C'
+    conditions = j['weather'][0]['description']
+    humidity = j['main']['humidity']
+    s = "Irvine Weather: {0} with a temperature of {1}" u"\u00B0" "C, humidity at {2}%."
+    currentweather = s.format(conditions[0].upper() + conditions[1:].lower(),
+    int(round(temperature)), int(round(humidity)))
+    return currentweather
+
+#tweet(get_next_chunk())
+tweet(weather())
+#print(weather())
