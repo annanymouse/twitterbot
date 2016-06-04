@@ -84,9 +84,12 @@ def do_tweet(tweet_type='weather'):
     tweet(data)
 
 def main():
+    gethour = datetime.now().hour
     if not too_soon():
-        do_tweet()
+        if gethour in range(4,8):
+            do_tweet()
+        elif gethour in range(16,22):
+            do_tweet('sonnet')
 
 if __name__ == '__main__':
     main()
-    
